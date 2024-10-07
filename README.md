@@ -58,7 +58,7 @@ The server will start on http://localhost:8080.
   {
       "title": "Task Title",
       "description": "Task Description",
-      "status": "pending" // or "completed"
+      "status": "pending"
   }
   ```
 
