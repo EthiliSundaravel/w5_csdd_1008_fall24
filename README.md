@@ -139,7 +139,7 @@ The server will start on http://localhost:8080.
 - **Method:** DELETE
 - **Endpoint:** /tasks/{id}
 
-- **Response** (200 Created):
+- **Response** (200 OK):
 
    ```json
    {
@@ -165,9 +165,9 @@ Tasks are stored in an in-memory slice, with an auto-incrementing nextID for uni
 
 ```go
 var (
-    tasks    = []Task{}    // In-memory slice to store tasks
-    nextID   = 1           // Auto-incrementing task ID
-    tasksMux sync.Mutex     // Mutex for concurrent access
+    tasks    = []Task{}   
+    nextID   = 1           
+    tasksMux sync.Mutex    
 )
 ```
 ### 3. Status Validation
