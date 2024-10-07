@@ -54,7 +54,7 @@ The server will start on http://localhost:8080.
 - **Endpoint:** /tasks
 - **Request Body** (JSON):
   
-  ```
+  ```json
   {
       "title": "Task Title",
       "description": "Task Description",
@@ -66,7 +66,7 @@ The server will start on http://localhost:8080.
 
 - **201 Created**
    
-   ```
+   ```json
    {
       "id": 1,
       "title": "Task Title",
@@ -107,7 +107,7 @@ The server will start on http://localhost:8080.
 - **Response** (201 Created):
 
 - **200 OK**
-   ```
+   ```json
    {
       "id": 1,
       "title": "Task Title 1",
@@ -133,7 +133,7 @@ The server will start on http://localhost:8080.
 - **Response**:
 
 - **200 OK**
-   ```
+   ```json
    {
       "id": 1,
       "title": "Updated Task Title",
@@ -152,11 +152,11 @@ The server will start on http://localhost:8080.
 - **Response** (201 Created):
 
 - **200 OK**
-   ```
+   ```json
    {
       "message": "Task deleted successfully"
    }
-   ```
+
 - **404 Not Found** (if the task with the given ID does not exist)
 
 ## Code Explanation
@@ -169,7 +169,7 @@ The `Task` struct represents a basic task entity in our application. It contains
 - **Description**: A detailed description of the task.
 - **Status**: The current status of the task, which can be either "pending" or "completed".
 
-```
+```go
 type Task struct {
     ID          int    `json:"id"`
     Title       string `json:"title"`
@@ -182,7 +182,7 @@ type Task struct {
 
 We use an in-memory slice (tasks) to store the tasks. The nextID variable is used to auto-increment task IDs, ensuring each task has a unique identifier.
 
-```
+```go
 var (
     tasks    = []Task{}    // In-memory slice to store tasks
     nextID   = 1           // Auto-incrementing task ID
@@ -195,7 +195,7 @@ The tasksMux mutex is employed to ensure thread-safe access to the tasks slice, 
 
 To ensure that the status field only accepts valid values ("pending" or "completed"), a ValidateStatus function is implemented:
 
-```
+```go
 func ValidateStatus(status string) bool {
     _, exists := validStatuses[status]
     return exists
@@ -226,7 +226,7 @@ We use Go's built-in net/http package to set up an HTTP server and define routes
 - http.HandleFunc("/tasks/{id}", ...): This defines routes for getting, updating, and deleting tasks by ID.
 
 The server is started using:
-```
+```go
 log.Fatal(http.ListenAndServe(":8080", nil))
 ```
 This binds the server to port 8080 and listens for incoming requests.
