@@ -1,6 +1,7 @@
 # Go Task CRUD API
 
-This is a simple RESTful CRUD (Create, Read, Update, Delete) API built using Go version 1.23 without any third-party packages. It uses Go's built-in HTTP server, JSON encoding/decoding, and concurrency mechanisms like mutexes for handling in-memory task storage.
+A simple Task Management API built in Go, supporting CRUD operations for tasks, each identified by a unique ID and containing a title, description, and status ("pending" or "completed").
+
 
 ## Table of Contents
 - [Features](#features)
@@ -35,7 +36,7 @@ The API exposes the following endpoints:
 ## Installation and Running
 
 ### Prerequisites:
-- Go version 1.23 installed on your machine.
+- Go version 1.23 installed.
 
 ### Running the server:
 1. Clone the repository or copy the `main.go` file.
@@ -62,9 +63,7 @@ The server will start on http://localhost:8080.
   }
   ```
 
-- **Response**:
-
-- **201 Created**
+- **Response (201 Created)**:
    
    ```json
    {
@@ -73,15 +72,13 @@ The server will start on http://localhost:8080.
       "description": "Task Description",
       "status": "pending"
    }
-   ```
-- **400 Bad Request** (if the status is invalid)
 
 ### 2. Get All Tasks (GET /tasks)
 
 - **Method:** GET
 - **Endpoint:** /tasks
 
-- **Response** (201 Created):
+- **Response** (200 OK):
 
 ```json
 [
@@ -104,9 +101,8 @@ The server will start on http://localhost:8080.
 
 - **Method:** GET
 - **Endpoint:** /tasks/{id}
-- **Response** (201 Created):
+- **Response** (200 OK):
 
-- **200 OK**
    ```json
    {
       "id": 1,
@@ -115,8 +111,6 @@ The server will start on http://localhost:8080.
       "status": "pending"
    }
    ```
-- **404 Not Found** (if the task with the given ID does not exist)
-
 ### 4. Update a Tasks by ID (PUT /tasks/{id})
 
 - **Method:** PUT
@@ -130,9 +124,8 @@ The server will start on http://localhost:8080.
         "status": "completed"
   }
  
-- **Response**:
+- **Response (200 OK)**:
 
-- **200 OK**
    ```json
    {
       "id": 1,
@@ -141,33 +134,22 @@ The server will start on http://localhost:8080.
       "status": "completed"
    }
    ```
-- **400 Bad Request** (if the status is invalid)
-- **404 Not Found** (if the task with the given ID does not exist)
-
 ### 5. Delete a Tasks by ID (DELETE /tasks/{id})
 
 - **Method:** DELETE
 - **Endpoint:** /tasks/{id}
 
-- **Response** (201 Created):
+- **Response** (200 Created):
 
-- **200 OK**
    ```json
    {
       "message": "Task deleted successfully"
    }
 
-- **404 Not Found** (if the task with the given ID does not exist)
-
 ## Code Explanation
 
 ### 1. Task Struct
-The `Task` struct represents a basic task entity in our application. It contains the following fields:
-
-- **ID**: A unique identifier for each task.
-- **Title**: The title of the task.
-- **Description**: A detailed description of the task.
-- **Status**: The current status of the task, which can be either "pending" or "completed".
+Defines the structure of a task:
 
 ```go
 type Task struct {
@@ -177,10 +159,9 @@ type Task struct {
     Status      string `json:"status"` // "pending" or "completed"
 }
 ```
-
 ### 2. In-Memory Storage
 
-We use an in-memory slice (tasks) to store the tasks. The nextID variable is used to auto-increment task IDs, ensuring each task has a unique identifier.
+Tasks are stored in an in-memory slice, with an auto-incrementing nextID for unique task IDs:
 
 ```go
 var (
@@ -189,11 +170,9 @@ var (
     tasksMux sync.Mutex     // Mutex for concurrent access
 )
 ```
-The tasksMux mutex is employed to ensure thread-safe access to the tasks slice, allowing multiple requests to modify the slice without causing data races.
-
 ### 3. Status Validation
 
-To ensure that the status field only accepts valid values ("pending" or "completed"), a ValidateStatus function is implemented:
+To ensure that the status field only accepts valid values ("pending" or "completed"), a ValidateStatus function is implemented. The validStatuses map contains the allowed statuses, and the function checks if the provided status exists in this map.
 
 ```go
 func ValidateStatus(status string) bool {
@@ -201,35 +180,25 @@ func ValidateStatus(status string) bool {
     return exists
 }
 ```
-
-The validStatuses map contains the allowed statuses, and the function checks if the provided status exists in this map.
-
 ### 4. Handlers
 
-We define separate handlers for each CRUD operation related to tasks.
+The API provides the following handlers for managing tasks:
 
-- **Create Task (POST /tasks)**: Handles task creation by decoding the request body, validating the status, and adding the task to the in-memory storage.
-
-- **Get All Tasks (GET /tasks)**: Fetches and returns a list of all available tasks.
-
-- **Get Task by ID (GET /tasks/{id})**: Retrieves a specific task by its ID.
-
-- **Update Task (PUT /tasks/{id})**: Updates the details of an existing task, including validating the status field.
-
-- **Delete Task (DELETE /tasks/{id})**: Removes a task by its ID from the in-memory storage.
+- **POST `/tasks`**: Create a new task.
+- **GET `/tasks`**: Retrieve all tasks.
+- **GET `/tasks/{id}`**: Get a specific task by its ID.
+- **PUT `/tasks/{id}`**: Update an existing task.
+- **DELETE `/tasks/{id}`**: Delete a task by its ID.
 
 ### 5. HTTP Server
 
-We use Go's built-in net/http package to set up an HTTP server and define routes.
+Sets up the server and routes:
 
-- http.HandleFunc("/tasks", ...): This defines the route for listing and creating tasks.
-- http.HandleFunc("/tasks/{id}", ...): This defines routes for getting, updating, and deleting tasks by ID.
-
-The server is started using:
 ```go
+http.HandleFunc("/tasks", ...)
+http.HandleFunc("/tasks/{id}", ...)
 log.Fatal(http.ListenAndServe(":8080", nil))
 ```
-This binds the server to port 8080 and listens for incoming requests.
 
 ## Conclusion
-This CRUD API is a simple demonstration of using Go 1.23's built-in packages to create a basic API for managing tasks. The API supports all CRUD operations and ensures thread safety with mutexes for concurrent access to in-memory data.
+This API serves as a basic framework for task management applications, utilizing Go's net/http package for building RESTful services.
